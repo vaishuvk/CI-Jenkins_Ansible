@@ -21,7 +21,7 @@
           remote_src: yes
      - name: copy war file
        copy: 
-         src: /var/lib/jenkins/workspace/jenkins_ansible/target/LoginWebApp-1.war 
+         src: LoginWebApp-1.war 
          dest: /opt/apache-tomcat-8.5.63/webapps/
      - name: Install Tomcat init script
        copy: 
