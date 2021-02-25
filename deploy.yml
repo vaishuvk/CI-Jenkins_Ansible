@@ -1,0 +1,39 @@
+---
+- name: playbook to deploy tomcat
+  hosts: localhost
+  become: yes
+  apt:
+      update_cache: yes
+  vars:
+    tomcat_url: https://mirrors.estointernet.in/apache/tomcat/tomcat-8/v8.5.63/bin/apache-tomcat-8.5.63.tar.gz
+  tasks: 
+     - name: update instance
+       apt:
+         update_cache: yes
+     - name: install java
+       package:
+          name: openjdk-8-jdk 
+          state: present 
+     - name: download tomcat
+       unarchive:
+          src:  "{{tomcat_url}}"
+          dest: /opt/apache-tomcat-8.5.63
+          remote_src: yes
+     - name: copy war file
+       copy: 
+         src: /var/lib/jenkins/workspace/jenkins_ansible/target/LoginWebApp-1.war 
+         dest: /opt/apache-tomcat-8.5.63/webapps/
+     - name: Install Tomcat init script
+       copy: 
+        src: tomcat-initscript.sh 
+        dest: /etc/init.d/tomcat 
+        mode: 0755
+     - name: reload the web server 
+       shell: systemctl daemon-reload 
+     - name: start tomcat 
+       service: 
+         name: tomcat 
+         state: restarted
+     - name: start tomcat
+       become: yes
+       shell: sh /opt/apache-tomcat-8.5.63/bin/startup.sh
